@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Obstacle
   - bullet
+  - Hazard
   layers:
   - Default
   - TransparentFX

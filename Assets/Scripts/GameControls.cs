@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameControls : MonoBehaviour
@@ -14,17 +15,32 @@ public class GameControls : MonoBehaviour
     public float enemySpawnTimer;
     private bool _bossSpawned = false;
     private int _enemyCount = 0;
+    public TMP_Text inicio;
+    public TMP_Text gameOver;
+
 
     void Start()
     {
+        
+        
         for (int i = 0; i <= 20; i++)
         {
             colFloors.Add(Instantiate(colFloor, new Vector2(-12 + i, -1), Quaternion.identity));
         }
+        
+        inicio.gameObject.SetActive(true);
+        gameOver.gameObject.SetActive(false);
     }
 
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            inicio.gameObject.SetActive(false);
+        }
+        
+        
         velocity += acceleration * Time.deltaTime;
 
         // 🔹 Movimiento del suelo

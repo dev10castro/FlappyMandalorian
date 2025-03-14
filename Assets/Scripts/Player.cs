@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -10,17 +11,27 @@ public class Player : MonoBehaviour
     public GameObject bullet; // Prefab del proyectil
     public Transform firePoint; // Punto desde donde se disparará el proyectil
 
+    
+    private bool isFloor = true; 
+
     void Start()
     {
+        
+        
+        
+        
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        
+        
+        if (Input.GetKeyDown(KeyCode.Space) && isFloor)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            isFloor = false;
         }
 
         if (rb.linearVelocity.y != 0)
@@ -30,6 +41,7 @@ public class Player : MonoBehaviour
         else
         {
             animator.SetBool("isJumping", false);
+            isFloor = true;
         }
 
         float move = Input.GetAxis("Horizontal");
@@ -49,14 +61,18 @@ public class Player : MonoBehaviour
         {
             Shoot();
         }
+        
+       
+        
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         
-        if(collision.gameObject.CompareTag("Obstacle"))
+        if(collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("Hazard"))
         {
             Destroy(gameObject);
+            
         }
         
         

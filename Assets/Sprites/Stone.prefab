@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 6671673020529384548}
   - component: {fileID: 6916967312685036500}
   - component: {fileID: 7183308983968192600}
-  - component: {fileID: -818290779506616655}
   m_Layer: 0
   m_Name: Stone
-  m_TagString: Obstacle
+  m_TagString: Hazard
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -144,16 +143,3 @@ PolygonCollider2D:
       - {x: 0.4284449, y: -0.21994151}
       - {x: 0.30780613, y: -0.0126466155}
   m_UseDelaunayMesh: 0
---- !u!114 &-818290779506616655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7472834879307210739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 579544408c5443afa02c0911862685e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 1
