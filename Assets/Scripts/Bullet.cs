@@ -12,38 +12,54 @@ public class Bullet : MonoBehaviour
 
         if (rb != null)
         {
-            rb.linearVelocity = transform.right * speed; // Mueve la bala hacia adelante
+            rb.linearVelocity = transform.right * speed; // Aplica velocidad a la bala
         }
         else
         {
             Debug.LogError("No se encontró Rigidbody2D en la bala.");
         }
 
-        Destroy(gameObject, lifetime); // Destruye la bala después de un tiempo
+        Destroy(gameObject, lifetime); // Destruir la bala tras el tiempo definido
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("Bala colisionó con: " + collision.gameObject.name);
+        Debug.Log("Bala impactó con: " + collision.gameObject.name);
 
         if (collision.CompareTag("Obstacle"))
         {
-            Debug.Log("Impactó un obstáculo: " + collision.gameObject.name);
-
-            // Verificar si el obstáculo tiene un script Enemy (evita errores si no tiene)
-            Enemy enemyScript = collision.GetComponent<Enemy>();
-
-            if (enemyScript != null)
+            if (collision.gameObject.name.Contains("Boss"))
             {
-                enemyScript.TakeDamage(1); // Aplica daño solo si tiene script
+                BossHealth bossHealth = collision.GetComponent<BossHealth>();
+                if (bossHealth != null)
+                {
+                    bossHealth.TakeDamage(1);
+                }
             }
             else
             {
-                Destroy(collision.gameObject); // Si no tiene script, se destruye directamente
+                Destroy(collision.gameObject); // Destruye enemigos normales
             }
-
-            Destroy(gameObject); // La bala se destruye siempre al impactar
+            Destroy(gameObject); // La bala desaparece después de impactar
+        }
+        else if (collision.CompareTag("EnemyDarkMouth")) // 🔹 Ahora detecta a DarkMouth
+        {
+            Debug.Log("DarkMouth impactado por una bala.");
+            Enemy enemyScript = collision.GetComponent<Enemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.TakeDamage(1); // 🔹 Resta 1 de vida
+            }
+            Destroy(gameObject); // 🔹 La bala desaparece
+        }
+        else if (collision.CompareTag("Hazard"))
+        {
+            Debug.Log("Impactó un Hazard, pero este no será destruido: " + collision.gameObject.name);
+            Destroy(gameObject); // 🔹 La bala desaparece, pero el Hazard permanece
+        }
+        else if (!collision.CompareTag("Player")) 
+        {
+            Destroy(gameObject);
         }
     }
-
 }

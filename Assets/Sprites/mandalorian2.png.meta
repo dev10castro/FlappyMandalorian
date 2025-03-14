@@ -173,7 +173,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      mandalorian2_0: 2080270560991353420
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

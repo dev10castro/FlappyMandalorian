@@ -2,14 +2,14 @@
 
 public class Enemy : MonoBehaviour
 {
-    public int health = 3; // Vida predeterminada de los enemigos
-    public bool isBoss = false; // Si es un Boss, tendrá más vida
+    public int health = 1; // Valor predeterminado
 
     void Start()
     {
-        if (isBoss)
+        if (CompareTag("EnemyDarkMouth"))
         {
-            health = 30; // 🔹 Asegura que el Boss tenga 20 de vida
+            health = 3; // Asegura que tenga 3 de vida
+            Debug.Log(gameObject.name + " inicia con " + health + " de vida. Tag: " + gameObject.tag);
         }
     }
 

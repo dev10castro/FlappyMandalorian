@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement; // Necesario para reiniciar la escena
 
 public class GameControls : MonoBehaviour
 {
@@ -15,40 +15,50 @@ public class GameControls : MonoBehaviour
     public float enemySpawnTimer;
     private bool _bossSpawned = false;
     private int _enemyCount = 0;
-    public TMP_Text inicio;
-    public TMP_Text gameOver;
 
+    // UI Elements
+    public GameObject menuUI;
+    public GameObject gameOverUI;
+    public GameObject youWinUI;
+
+    private bool isGameRunning = false;
+    private bool gameOver = false; // Variable para saber si el juego terminó
 
     void Start()
     {
-        
-        
         for (int i = 0; i <= 20; i++)
         {
             colFloors.Add(Instantiate(colFloor, new Vector2(-12 + i, -1), Quaternion.identity));
         }
-        
-        inicio.gameObject.SetActive(true);
-        gameOver.gameObject.SetActive(false);
+        ShowMenu();
     }
 
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.S))
+        if (!isGameRunning && Input.GetKeyDown(KeyCode.S))
         {
-            inicio.gameObject.SetActive(false);
+            Debug.Log("Tecla S presionada: iniciando el juego.");
+            StartGame();
         }
-        
-        
+        if (!isGameRunning && Input.GetKeyDown(KeyCode.S)) // Ahora el juego comienza con "S"
+        {
+            StartGame();
+        }
+
+        if (gameOver && Input.GetKeyDown(KeyCode.R)) 
+        {
+            RestartGame(); // Reinicia el juego cuando se presiona "R"
+        }
+
+        if (!isGameRunning) return;
+
         velocity += acceleration * Time.deltaTime;
 
-        // 🔹 Movimiento del suelo
-        for (int i = 0; i < colFloors.Count; i++)
+        foreach (var floor in colFloors)
         {
-            if (colFloors[i] != null)
+            if (floor != null)
             {
-                Vector2 currentPosition = colFloors[i].transform.position;
+                Vector2 currentPosition = floor.transform.position;
                 currentPosition.x -= 1.55f * Time.deltaTime;
 
                 if (currentPosition.x < -12)
@@ -56,12 +66,11 @@ public class GameControls : MonoBehaviour
                     currentPosition.x = 8;
                 }
 
-                colFloors[i].transform.position = currentPosition;
+                floor.transform.position = currentPosition;
             }
         }
 
-        // 🔹 Movimiento de obstáculos y eliminación segura de objetos destruidos
-        for (int i = obstacles.Count - 1; i >= 0; i--) // 🔹 Iteramos al revés para evitar errores de índice
+        for (int i = obstacles.Count - 1; i >= 0; i--)
         {
             if (obstacles[i] == null)
             {
@@ -83,7 +92,6 @@ public class GameControls : MonoBehaviour
             }
         }
 
-        // 🔹 Spawner de enemigos (máximo 19 enemigos)
         if (_enemyCount < 29)
         {
             enemySpawnTimer += Time.deltaTime;
@@ -94,19 +102,16 @@ public class GameControls : MonoBehaviour
             }
         }
 
-        // 🔹 Spawnear el jefe SOLO cuando no haya enemigos en pantalla y después del enemigo 19
         if (_enemyCount == 29 && !_bossSpawned)
         {
             SpawnBoss();
         }
 
-        // 🔹 Movimiento del fondo (evita errores si `background` es `null`)
         if (background != null && background.material != null)
         {
             background.material.mainTextureOffset += new Vector2(velocity, 0) * Time.deltaTime;
         }
     }
-
 
     void SpawnEnemy()
     {
@@ -121,16 +126,26 @@ public class GameControls : MonoBehaviour
         }
         else if (rand == 1)
         {
-            newEnemy = enemy;
-            spawnPosition = new Vector2(12f, -1.65f);
+            newEnemy = Instantiate(enemy, new Vector2(12f, -1.65f), Quaternion.identity);
+
+            // Si el enemigo es DarkMouth, le asignamos su posición y vida correctamente
+            if (newEnemy.CompareTag("EnemyDarkMouth"))
+            {
+                Enemy enemyScript = newEnemy.GetComponent<Enemy>();
+                if (enemyScript != null)
+                {
+                    enemyScript.health = 3; // Fija la vida a 3
+                    Debug.Log("DarkMouth generado con vida: " + enemyScript.health);
+                }
+            }
+            spawnPosition = new Vector2(12f, -1.65f); // DarkMouth aparecerá en la misma posición que los demás enemigos
         }
         else
         {
             newEnemy = stone2;
-            spawnPosition = new Vector2(12f, 1.5f); // 🔹 Inicia más arriba para el movimiento vertical
+            spawnPosition = new Vector2(12f, 1.5f);
         }
 
-        // Verificar si hay suficiente distancia entre el nuevo enemigo y los existentes
         bool canSpawn = true;
         foreach (var obstacle in obstacles)
         {
@@ -147,15 +162,13 @@ public class GameControls : MonoBehaviour
             obstacles.Add(spawnedEnemy);
             _enemyCount++;
 
-            // 🔹 Si es stone2, añadir el script de movimiento
             if (rand == 2)
             {
                 spawnedEnemy.AddComponent<Stone2Movement>();
             }
-
-            Debug.Log("Enemigo generado: " + newEnemy.name + " | Total enemigos: " + _enemyCount);
         }
     }
+
 
 
     void SpawnBoss()
@@ -163,6 +176,47 @@ public class GameControls : MonoBehaviour
         GameObject spawnedBoss = Instantiate(boss, new Vector2(12f, -0.2f), Quaternion.identity);
         obstacles.Add(spawnedBoss);
         _bossSpawned = true;
-        Debug.Log("Boss generado después de 19 enemigos y cuando no quedan enemigos en pantalla.");
+
+        // Llamamos a un script en el Boss para detectar su eliminación
+        spawnedBoss.AddComponent<BossHealth>();
+    }
+
+    public void ShowMenu()
+    {
+        menuUI.SetActive(true);
+        gameOverUI.SetActive(false);
+        Time.timeScale = 0;
+        isGameRunning = false;
+    }
+
+    public void StartGame()
+    {
+        menuUI.SetActive(false);
+        gameOverUI.SetActive(false);
+        youWinUI.SetActive(false);
+        Time.timeScale = 1; // 🔹 Se asegura de que el tiempo vuelve a la normalidad
+        isGameRunning = true;
+        gameOver = false; // Reiniciamos la variable
+    }
+
+    public void GameOver()
+    {
+        gameOverUI.SetActive(true);
+        Time.timeScale = 0;
+        isGameRunning = false;
+        gameOver = true; // Indicamos que el juego ha terminado
+    }
+
+    public void YouWin()
+    {
+        youWinUI.SetActive(true);
+        Time.timeScale = 0;
+        isGameRunning = false;
+    }
+
+    public void RestartGame()
+    {
+        Time.timeScale = 1; // Asegurar que el juego no esté pausado
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Reinicia la escena actual
     }
 }
