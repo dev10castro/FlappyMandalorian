@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
     public Animator animator;
     public Rigidbody2D rb;
     public float jumpForce = 50f;
-    public float moveSpeed = 5f;
+    public float moveSpeed = 7f;
     public GameObject bullet; // Prefab del proyectil
     public Transform firePoint; // Punto desde donde se disparará el proyectil
 

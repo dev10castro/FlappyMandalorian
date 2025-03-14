@@ -111,7 +111,7 @@ public class GameControls : MonoBehaviour
         else
         {
             newEnemy = stone2;
-            spawnPosition = new Vector2(12f, -0.5f);
+            spawnPosition = new Vector2(12f, 1.5f); // 🔹 Inicia más arriba para el movimiento vertical
         }
 
         // Verificar si hay suficiente distancia entre el nuevo enemigo y los existentes
@@ -130,9 +130,17 @@ public class GameControls : MonoBehaviour
             GameObject spawnedEnemy = Instantiate(newEnemy, spawnPosition, Quaternion.identity);
             obstacles.Add(spawnedEnemy);
             _enemyCount++;
+
+            // 🔹 Si es stone2, añadir el script de movimiento
+            if (rand == 2)
+            {
+                spawnedEnemy.AddComponent<Stone2Movement>();
+            }
+
             Debug.Log("Enemigo generado: " + newEnemy.name + " | Total enemigos: " + _enemyCount);
         }
     }
+
 
     void SpawnBoss()
     {
