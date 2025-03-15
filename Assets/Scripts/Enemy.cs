@@ -21,7 +21,16 @@ public class Enemy : MonoBehaviour
         if (health <= 0)
         {
             Debug.Log(gameObject.name + " ha sido destruido.");
+
+            // Aumentamos la puntuación si es un DarkMouth
+            GameControls gameControls = FindFirstObjectByType<GameControls>();
+            if (gameControls != null && CompareTag("EnemyDarkMouth"))
+            {
+                gameControls.AddScore(1); // Suma 1 punto por cada DarkMouth
+            }
+
             Destroy(gameObject);
         }
     }
+
 }

@@ -27,8 +27,10 @@ public class BossHealth : MonoBehaviour
         if (gameControls != null)
         {
             gameControls.YouWin();
+            gameControls.AddScore(10); // Suma 10 puntos por derrotar al Boss
         }
 
-        Destroy(gameObject); // 🔹 Eliminamos el Boss
+        Destroy(gameObject);
     }
+
 }

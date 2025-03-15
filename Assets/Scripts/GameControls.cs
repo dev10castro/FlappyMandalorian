@@ -14,7 +14,14 @@ public class GameControls : MonoBehaviour
     public float minimumDistanceBetweenEnemies = 3f;
     public float enemySpawnTimer;
     private bool _bossSpawned = false;
+    private float bossSpawnDelay = 3f; 
+    private float bossTimer = 0f;
     private int _enemyCount = 0;
+    
+    //marcador
+    private int score = 0;
+    public TMPro.TextMeshProUGUI scoreText; // Referencia al UI Text
+
 
     // UI Elements
     public GameObject menuUI;
@@ -104,7 +111,11 @@ public class GameControls : MonoBehaviour
 
         if (_enemyCount == 29 && !_bossSpawned)
         {
-            SpawnBoss();
+            bossTimer += Time.deltaTime; // ⏳ Comienza a contar el tiempo
+            if (bossTimer >= bossSpawnDelay) 
+            {
+                SpawnBoss();
+            }
         }
 
         if (background != null && background.material != null)
@@ -173,9 +184,11 @@ public class GameControls : MonoBehaviour
 
     void SpawnBoss()
     {
+        if (_bossSpawned) return; // Evita múltiples invocaciones
+    
+        _bossSpawned = true; 
         GameObject spawnedBoss = Instantiate(boss, new Vector2(12f, -0.2f), Quaternion.identity);
         obstacles.Add(spawnedBoss);
-        _bossSpawned = true;
 
         // Llamamos a un script en el Boss para detectar su eliminación
         spawnedBoss.AddComponent<BossHealth>();
@@ -194,10 +207,20 @@ public class GameControls : MonoBehaviour
         menuUI.SetActive(false);
         gameOverUI.SetActive(false);
         youWinUI.SetActive(false);
-        Time.timeScale = 1; // 🔹 Se asegura de que el tiempo vuelve a la normalidad
+        Time.timeScale = 1; // Se asegura de que el tiempo vuelve a la normalidad
         isGameRunning = true;
         gameOver = false; // Reiniciamos la variable
     }
+    
+    public void AddScore(int points)
+    {
+        score += points;
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + "0"+score;
+        }
+    }
+
 
     public void GameOver()
     {

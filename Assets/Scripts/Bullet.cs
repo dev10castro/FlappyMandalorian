@@ -42,20 +42,20 @@ public class Bullet : MonoBehaviour
             }
             Destroy(gameObject); // La bala desaparece después de impactar
         }
-        else if (collision.CompareTag("EnemyDarkMouth")) // 🔹 Ahora detecta a DarkMouth
+        else if (collision.CompareTag("EnemyDarkMouth")) // Ahora detecta a DarkMouth
         {
             Debug.Log("DarkMouth impactado por una bala.");
             Enemy enemyScript = collision.GetComponent<Enemy>();
             if (enemyScript != null)
             {
-                enemyScript.TakeDamage(1); // 🔹 Resta 1 de vida
+                enemyScript.TakeDamage(1); // Resta 1 de vida
             }
-            Destroy(gameObject); // 🔹 La bala desaparece
+            Destroy(gameObject); // La bala desaparece
         }
         else if (collision.CompareTag("Hazard"))
         {
             Debug.Log("Impactó un Hazard, pero este no será destruido: " + collision.gameObject.name);
-            Destroy(gameObject); // 🔹 La bala desaparece, pero el Hazard permanece
+            Destroy(gameObject); // La bala desaparece, pero el Hazard permanece
         }
         else if (!collision.CompareTag("Player")) 
         {

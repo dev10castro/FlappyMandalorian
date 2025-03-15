@@ -78,14 +78,22 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Hazard") || collision.gameObject.CompareTag("Obstacle") || collision.gameObject.CompareTag("EnemyDarkMouth"))
         {
+            Debug.Log("Jugador ha muerto al chocar con: " + collision.gameObject.name);
+
             if (deathSound != null && audioSource != null)
             {
+                Debug.Log("Reproduciendo sonido de muerte.");
                 audioSource.PlayOneShot(deathSound);
+            }
+            else
+            {
+                Debug.LogError("No se encontró el sonido de muerte o el AudioSource.");
             }
 
             gameControls.GameOver(); // Muestra Game Over
-            Invoke("DestroyPlayer", 1.0f); // Retrasa la destrucción del jugador 1 segundo
-            audioSource.Stop();
+
+            // En lugar de destruir de inmediato, espera el tiempo del sonido
+            Invoke("DestroyPlayer", deathSound.length); 
         }
     }
 

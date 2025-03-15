@@ -13,11 +13,11 @@ public class MusicManager : MonoBehaviour
             Debug.Log("Iniciando la música.");
             audioSource.loop = true;
 
-            // 🔹 Agregar esto para asegurar que el volumen está bien
+            // Agregar esto para asegurar que el volumen está bien
             audioSource.volume = 1.0f;
             audioSource.mute = false;
 
-            // 🔹 Esperar un momento antes de iniciar la música (por si acaso)
+            // Esperar un momento antes de iniciar la música (por si acaso)
             Invoke("PlayMusic", 0.1f);
         }
         else
